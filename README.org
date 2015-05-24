@@ -1,0 +1,45 @@
+#+title: Vagrant VM for Web Dev with SBCL and Rethink DB
+#+date: [2015-05-24 Sun]
+
+* Prerequisites
+
+- [[https://www.virtualbox.org/][VirtualBox]]
+- [[https://www.vagrantup.com/][Vagrant]]
+- [[http://www.ansible.com/home][Ansible]]
+
+* Installation
+
+Clone this repository:
+
+#+BEGIN_EXAMPLE
+$ git clone https://github.com/rudolfochrist/vagrant-ansible-sbcl.git
+#+END_EXAMPLE
+
+* Usage
+
+Use
+
+#+BEGIN_EXAMPLE
+$ vagrant up
+#+END_EXAMPLE
+
+to start the machine. Then ssh into the guest system with
+
+#+BEGIN_EXAMPLE
+$ vagrant ssh
+#+END_EXAMPLE
+
+On the guest machine you can use
+
+#+BEGIN_EXAMPLE
+$ tmuxinator start swank
+#+END_EXAMPLE
+
+which creates an tmux session called ~swank~ and runs ~sbcl~ inside it. ~swank~ gets started as well on port
+4005. The VM creates a private network. To connect vie Emacs/Slime to the REPL use
+
+#+BEGIN_SRC emacs-lisp
+(slime-connect "192.168.33.10" 4005)
+#+END_SRC
+
+or ~M-x slime-connect~ alternatively.
