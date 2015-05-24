@@ -1,0 +1,15 @@
+#-quicklisp
+(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
+                                       (user-homedir-pathname))))
+  (when (probe-file quicklisp-init)
+    (load quicklisp-init)))
+
+#+sbcl
+(setf sb-impl::*default-external-format* :utf-8)
+
+(load "/home/vagrant/slime/swank-loader.lisp")
+(swank-loader:init)
+(defun start-up-swank (&key (port 4005))
+  "Load and start swank."
+  (setf swank::*loopback-interface* "192.168.33.10")
+  (swank:create-server :port port :dont-close t))

@@ -1,0 +1,60 @@
+---
+- name: Web Programming with SBCL
+  hosts: all
+  remote_user: vagrant
+  sudo: yes
+
+  pre_tasks:
+    - name: update apt-cache
+      apt: update_cache=yes
+
+  tasks:
+    - name: install git
+      apt: name=git
+    - name: install ruby 2.0
+      apt: name={{ item }} state=latest
+      with_items:
+        - ruby2.0
+        - ruby2.0-dev
+    - name: install tmux
+      apt: name=tmux
+    - name: install tmuxinator
+      shell: sudo gem2.0 install tmuxinator
+      args:
+        creates: /usr/local/bin/tmuxinator
+    - name: create tmuxinator sessions dierectory
+      file: path=/home/vagrant/.tmuxinator/ owner=vagrant group=vagrant state=directory
+    - name: add tmux/swank session
+      copy: src=config-files/tmux-swank.yml dest=/home/vagrant/.tmuxinator/swank.yml owner=vagrant group=vagrant
+    - name: install sbcl
+      apt: name=sbcl state=latest
+    - name: copy sbclrc
+      copy: src=config-files/sbclrc dest=/home/vagrant/.sbclrc owner=vagrant group=vagrant
+    - name: install quicklisp
+      apt: name=cl-quicklisp state=latest
+    - name: initialize quicklisp
+      shell: sbcl --load /usr/share/cl-quicklisp/quicklisp.lisp --eval "(progn (quicklisp-quickstart:install) (exit))"
+      args:
+        creates: /home/vagrant/quicklisp
+    - name: set quicklisp for user
+      shell: mv /root/quicklisp /home/vagrant && chown -R vagrant:vagrant /home/vagrant/quicklisp
+      args:
+        creates: /home/vagrant/quicklisp
+    - name: add RethinkDB repo
+      apt_repository: repo="deb http://download.rethinkdb.com/apt trusty main"
+    - name: add RethinkDB pubkey
+      apt_key: url=http://download.rethinkdb.com/apt/pubkey.gpg
+    - name: install RethinkDB
+      apt: name=rethinkdb update_cache=yes
+    - name: install rinted
+      apt: name=rinetd
+    - name: configure rinetd
+      copy: src=config-files/rinetd.conf dest=/etc/rinetd.conf
+      notify:
+        - restart rinetd
+    - name: install swank
+      git: repo=https://github.com/slime/slime.git dest=/home/vagrant/slime/ version=v2.13
+
+  handlers:
+    - name: restart rinetd
+      service: name=rinetd state=restarted
