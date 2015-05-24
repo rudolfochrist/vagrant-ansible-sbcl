@@ -54,6 +54,8 @@
         - restart rinetd
     - name: install swank
       git: repo=https://github.com/slime/slime.git dest=/home/vagrant/slime/ version=v2.13
+    - name: get latest asdf
+      get_url: url=https://common-lisp.net/project/asdf/asdf.lisp dest=/home/vagrant/asdf.lisp
 
   handlers:
     - name: restart rinetd

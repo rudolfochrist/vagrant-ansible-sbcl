@@ -7,6 +7,8 @@
 #+sbcl
 (setf sb-impl::*default-external-format* :utf-8)
 
+(load "/home/vagrant/asdf.lisp")
+
 (load "/home/vagrant/slime/swank-loader.lisp")
 (swank-loader:init)
 (defun start-up-swank (&key (port 4005))
