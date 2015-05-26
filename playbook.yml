@@ -46,6 +46,10 @@
       apt_key: url=http://download.rethinkdb.com/apt/pubkey.gpg
     - name: install RethinkDB
       apt: name=rethinkdb update_cache=yes
+    - name: copy RethinkDB configuration
+      copy: src=config-files/rethinkdb.conf dest=/etc/rethinkdb/instances.d/instance1.conf
+      notify:
+        - restart rethinkdb
     - name: install rinted
       apt: name=rinetd
     - name: configure rinetd
@@ -60,3 +64,5 @@
   handlers:
     - name: restart rinetd
       service: name=rinetd state=restarted
+    - name: restart rethinkdb
+      service: name=rethinkdb state=restarted
